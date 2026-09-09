@@ -1,0 +1,8 @@
+scanpy==1.9.6
+scvi-tools==1.0.4
+scikit-learn
+scipy
+pandas
+matplotlib
+scikit-misc
+h5py
