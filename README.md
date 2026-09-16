@@ -3,12 +3,13 @@
 Computational workflow for single-cell transcriptomics analysis of caprine granulosa cells across fertility phenotypes.
 
 ## 📌 Repository Structure
+- `00_preprocess_mad.py`: Quality control, mitochondrial filtering, and sample merging using Median Absolute Deviation (MAD).
 - `01_scvi_latent_and_clustering.py`: Deep generative model integration via scVI and Leiden resolution optimization.
 - `02_density_shift_score.py`: Localized KNN graph label smoothing for Density Shift Score ($S_i$) computation and stratified DE testing.
 - `requirements.txt`: Python package dependencies.
 
 ## 📦 Data Availability
-Due to GitHub file size limits, processed single-cell AnnData (`.h5ad`) objects are archived on Figshare:
+Raw fastq/matrix files and raw output directories are excluded due to file size limits. Processed single-cell AnnData (`.h5ad`) objects are archived on Figshare:
 - **Datasets:** `staged_adata.h5ad` (~93 MB) and `merged_goat_fertility.h5ad` (~162 MB)
 - **Figshare DOI:** [https://doi.org/10.6084/m9.figshare.33472399](https://doi.org/10.6084/m9.figshare.33472399)
 
