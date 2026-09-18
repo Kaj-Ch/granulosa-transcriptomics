@@ -3,9 +3,10 @@
 00_preprocess_mad.py
 --------------------
 Preprocessing script for goat granulosa cell transcriptomics.
-Performs quality control using an adaptive Median Absolute Deviation (MAD) framework,
-logs step-by-step filtering statistics per sample, exports a detailed CSV report,
-and writes the clean AnnData object to disk.
+Performs quality control using an adaptive Median Absolute Deviation (MAD) framework
+for library metrics (UMIs and detected features) combined with a fixed 15% threshold 
+for mitochondrial read fraction (% MT). Logs step-by-step filtering statistics per sample,
+exports a detailed CSV report, and writes the clean AnnData object to disk.
 """
 
 import os
@@ -66,7 +67,7 @@ def main():
     qc_report_list = []
     
     print("=" * 80)
-    print("STARTING STEP 00: QUALITY CONTROL & MAD PREPROCESSING")
+    print("STARTING STEP 00: QUALITY CONTROL & PREPROCESSING (MAD + 15% MT)")
     print("=" * 80)
     
     # --- Step A: Read Native Salmon Datasets ---
@@ -120,13 +121,15 @@ def main():
         })
 
     # --- Step C: Compute Adaptive MAD Thresholds & Filter Cells ---
-    print("[3/5] Computing adaptive MAD statistical cutoffs...")
+    print("[3/5] Computing adaptive MAD cutoffs for UMI/Genes & setting MT <= 15%...")
     min_umi, max_umi = calc_mad_thresholds(adata.obs['total_counts'], n_mads=3, side="both")
     min_transcripts, max_transcripts = calc_mad_thresholds(adata.obs['n_genes_by_counts'], n_mads=3, side="both")
     min_transcripts = max(min_transcripts, 1000)  # Enforce strict baseline
-    max_mt = calc_mad_thresholds(adata.obs['pct_counts_mt'], n_mads=5, side="upper")
+    
+    # Set fixed mitochondrial read threshold at 15.0%
+    max_mt = 15.0
 
-    cutoff_str = f"UMIs: [{min_umi:.0f}, {max_umi:.0f}] | Genes: [{min_transcripts:.0f}, {max_transcripts:.0f}] | Max MT: {max_mt:.2f}%"
+    cutoff_str = f"UMIs (3 MAD): [{min_umi:.0f}, {max_umi:.0f}] | Genes (3 MAD): [{min_transcripts:.0f}, {max_transcripts:.0f}] | Max MT: {max_mt:.1f}%"
     print(f"    --> Thresholds applied: {cutoff_str}")
 
     # Save raw state in .raw slot
